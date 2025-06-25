@@ -44,6 +44,13 @@ const userSchema = new mongoose.Schema(
       },
       select: false, // good practice: don’t return hash in API responses
     },
+
+    photo: {
+      type: String,
+      default: "https://example.com/default-profile-photo.png", // replace with your default photo URL
+    },
+
+   
   },
   { timestamps: true }
 );

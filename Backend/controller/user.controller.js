@@ -1,7 +1,10 @@
 
 import User from "../model/user.model.js"; // adjust path as needed
 import { errorHnandler } from "../utlis/error.js";
+import jwt from "jsonwebtoken";
 
+
+// Register a new user
 export const registerUser = async (req, res, next) => {
   const { username, email, password } = req.body;
 
@@ -36,3 +39,30 @@ export const registerUser = async (req, res, next) => {
     next(errorHnandler(500, "Internal Server Error"));
   }
 };
+
+// Signin 
+
+export const signinUser = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password || email === "" || password === "") {
+    next(errorHnandler(400, "All fields are required"));
+  }
+
+  try{
+   const validUser = await User.findOne({email});
+   if (!validUser){
+    next(errorHnandler(400, "Invalid email or password"));
+   }
+
+   
+
+    const token = jwt.sign({id: validUser._id}, process.env.JWT_SECRET);
+    res.status(200).cookie('access_token', token, {
+      httpOnly: true}).json(validUser);
+
+
+  }catch (error){
+    next(error)
+  }
+}
